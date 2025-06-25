@@ -117,16 +117,6 @@ function checkWinner(){
             html: `${currentPlayer} dominates the board!`,
             timer: 2000,
             timerProgressBar: true,
-            didOpen: () => {
-                // Swal.showLoading();
-                //     const timer = Swal.getPopup().querySelector("b");
-                //     timerInterval = setInterval(() => {
-                //     timer.textContent = `${Swal.getTimerLeft()}`;
-                // }, 100);
-            },
-            willClose: () => {
-                clearInterval(timerInterval);
-            }
         })
     }
     else if (!options.includes('')){
@@ -138,16 +128,6 @@ function checkWinner(){
             html: `Both players ran out of moves — it's a tie!`,
             timer: 2000,
             timerProgressBar: true,
-            didOpen: () => {
-                // Swal.showLoading();
-                //     const timer = Swal.getPopup().querySelector("b");
-                //     timerInterval = setInterval(() => {
-                //     timer.textContent = `${Swal.getTimerLeft()}`;
-                // }, 100);
-            },
-            willClose: () => {
-                clearInterval(timerInterval);
-            }
         })
     }
     else{
@@ -166,4 +146,6 @@ function restartGame(){
         "","","",
         "","",""
     ]
+    xMoves = []
+    oMoves = []
 }
