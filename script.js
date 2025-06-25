@@ -110,7 +110,6 @@ function checkWinner(){
         statusText.textContent = `${currentPlayer} Win`
         running = false
 
-        let timerInterval;
         Swal.fire({
             title: "Congratulation!!",
             icon: 'success',
@@ -137,6 +136,7 @@ function checkWinner(){
 
 function restartGame(){
     cells.forEach(cell => cell.textContent = '');
+    cells.forEach(cell => cell.classList.remove('text-mute'));
     currentPlayer = 'X'
     statusText.textContent = `${currentPlayer}'s Turn`
     running = true
