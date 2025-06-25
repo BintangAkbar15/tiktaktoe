@@ -136,7 +136,7 @@ function checkWinner(){
 
 function restartGame(){
     cells.forEach(cell => cell.textContent = '');
-    cells.forEach(cell => cell.classList.remove('text-mute'));
+    cells.forEach(cell => cell.classList.remove('text-muted'));
     currentPlayer = 'X'
     statusText.textContent = `${currentPlayer}'s Turn`
     running = true
