@@ -1,96 +1,169 @@
 const cells = document.querySelectorAll(".cell");
 const statusText = document.querySelector("#statusText");
 const restartBtn = document.querySelector("#restartBtn");
-const winConditions = [
-    // kesamping
-    [0, 1, 2],
-    [3, 4, 5],
-    [6, 7, 8],
-    // kebawah
-    [0, 3, 6],
-    [1, 4, 7],
-    [2, 5, 8],
-    // miring
-    [0, 4, 8],
-    [2, 4, 6]
-];
+
 let options = 
 [
-    "", "", "", 
-    "", "", "", 
-    "", "", ""
-];
-let currentPlayer = "X";
-let running = false;
+    "","","",
+    "","","",
+    "","",""
+]
 
-initializeGame();
+const winCondition = 
+[
+    // ke samping
+    [0,1,2],
+    [3,4,5],
+    [6,7,8],
+    // ke bawah
+    [0,3,6],
+    [1,4,7],
+    [2,5,8],
+    // miring
+    [0,4,8],
+    [2,4,6]
+]
+let currentPlayer = 'X'
+let running = false
+
+let xMoves = []
+let oMoves = []
+
+initializeGame()
 
 function initializeGame(){
-    cells.forEach(cell => cell.addEventListener("click", cellClicked));
-    restartBtn.addEventListener("click", restartGame);
-    statusText.textContent = `${currentPlayer}'s turn`;
-    running = true;
+    cells.forEach(cell => cell.addEventListener('click',cellClicked));
+    restartBtn.addEventListener('click',restartGame);
+    statusText.textContent = `${currentPlayer}'s Turn`
+    running = true
 }
 
 function cellClicked(){
-    const cellIndex = this.getAttribute('cellIndex')
-    
-    if(options[cellIndex] != '' || !running){
+    const cellIndex = this.getAttribute("cellIndex")
+
+    if (options[cellIndex] != '' || !running) {
         return;
     }
 
-    updateCell(this, cellIndex);
-    checkWinner();
+    updateCell(this,cellIndex);
+    checkWinner()
 }
 
-function updateCell(cell, index){
-    cell.textContent = currentPlayer
+function updateCell(cell,index){
     options[index] = currentPlayer
-}
+    cell.textContent = currentPlayer
 
-function restartGame(){
-    cells.forEach(cell => cell.textContent = '');
-    statusText.textContent = `${currentPlayer}'s turn`;
-    running = true;
-    options = 
-    [
-        "", "", "", 
-        "", "", "", 
-        "", "", ""
-    ];
-}
-
-function checkWinner(){
-    let roundwon = false
-    for (let i = 0; i < winConditions.length; i++) {
-        let condition = winConditions[i]
-        let cellA = options[condition[0]]
-        let cellB = options[condition[1]]
-        let cellC = options[condition[2]]
-
-        if (cellA == '' ||cellB == '' || cellC == '') {
-            continue;
+    if(currentPlayer == "X"){
+        xMoves.push(index)
+        if(xMoves.length == 2) cells[xMoves[0]].classList.add('text-muted')
+        
+        if(xMoves.length > 3){
+            let oldIndex = xMoves.shift()
+            cells[oldIndex].classList.remove('text-muted')
+            
+            cells[xMoves[0]].classList.add('text-muted')
+            
+            options[oldIndex] = ''
+            cells[oldIndex].textContent = ''
         }
-        if (cellA == cellB && cellB == cellC) {
-            roundwon = true
-            break;
-        }
-    }
-    if(roundwon){
-        statusText.textContent = `${currentPlayer} Win`
-        running = false
-    }
-    else if(!options.includes("")){
-        statusText.textContent = `Draw`
-        running = false
     }
     else{
-        changePlayer()
-    }
+        oMoves.push(index)
+        if(oMoves.length == 2) cells[oMoves[0]].classList.add('text-muted')
     
-}  
+        if(oMoves.length > 3){
+            let oldIndex = oMoves.shift()
+            cells[oldIndex].classList.remove('text-muted')
+            
+            cells[oMoves[0]].classList.add('text-muted')
+           
+            options[oldIndex] = ''
+            cells[oldIndex].textContent = ''
+        }
+    }
+}
 
 function changePlayer(){
     currentPlayer = (currentPlayer == 'X') ? 'O' : 'X'
     statusText.textContent = `${currentPlayer}'s Turn`
+}
+
+function checkWinner(){
+    let roundWon = false
+    
+    for (let i = 0; i < winCondition.length; i++) {
+        const condition = winCondition[i];
+        const cellA = options[condition[0]]
+        const cellB = options[condition[1]]
+        const cellC = options[condition[2]]
+        
+        if(cellA == "" || cellB == "" || cellC == ""){
+            continue;
+        }
+        if(cellA == cellB && cellB == cellC){
+            roundWon = true;
+            break;
+        }
+    }
+    
+    if(roundWon){
+        statusText.textContent = `${currentPlayer} Win`
+        running = false
+
+        let timerInterval;
+        Swal.fire({
+            title: "Congratulation!!",
+            icon: 'success',
+            html: `${currentPlayer} dominates the board!`,
+            timer: 2000,
+            timerProgressBar: true,
+            didOpen: () => {
+                // Swal.showLoading();
+                //     const timer = Swal.getPopup().querySelector("b");
+                //     timerInterval = setInterval(() => {
+                //     timer.textContent = `${Swal.getTimerLeft()}`;
+                // }, 100);
+            },
+            willClose: () => {
+                clearInterval(timerInterval);
+            }
+        })
+    }
+    else if (!options.includes('')){
+        statusText.textContent = `Draw`
+        running = false
+        Swal.fire({
+            title: "No Winner This Time",
+            icon: 'warning',
+            html: `Both players ran out of moves — it's a tie!`,
+            timer: 2000,
+            timerProgressBar: true,
+            didOpen: () => {
+                // Swal.showLoading();
+                //     const timer = Swal.getPopup().querySelector("b");
+                //     timerInterval = setInterval(() => {
+                //     timer.textContent = `${Swal.getTimerLeft()}`;
+                // }, 100);
+            },
+            willClose: () => {
+                clearInterval(timerInterval);
+            }
+        })
+    }
+    else{
+        changePlayer()
+    }
+}
+
+function restartGame(){
+    cells.forEach(cell => cell.textContent = '');
+    currentPlayer = 'X'
+    statusText.textContent = `${currentPlayer}'s Turn`
+    running = true
+    options = 
+    [
+        "","","",
+        "","","",
+        "","",""
+    ]
 }
